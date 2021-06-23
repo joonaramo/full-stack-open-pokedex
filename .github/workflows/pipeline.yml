@@ -39,3 +39,9 @@ jobs:
           heroku_email: 'joona00ramo@gmail.com'
           healthcheck: 'https://salty-reef-93891.herokuapp.com/ping'
           checkstring: 'pong'
+      - name: Bump version and push tag
+        if: ${{ github.event_name == 'push' }}
+        uses: anothrNick/github-tag-action@1.33.0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          DEFAULT_BUMP: patch
