@@ -46,3 +46,26 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           DEFAULT_BUMP: patch
+      - name: Send success notification to Slack
+        uses: 8398a7/action-slack@v3
+        with:
+          status: custom
+          fields: workflow,job,commit,repo,ref,author,took
+          custom_payload: |
+            {
+              attachments: [{
+                color: 'good',
+                text: `a new version deployed to https://salty-reef-93891.herokuapp.com/ (${process.env.AS_COMMIT}) by ${process.env.AS_AUTHOR} build took ${process.env.AS_TOOK}`,
+              }]
+            }
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+        if: ${{ success() && github.event_name == 'push' && !contains(join(toJson(github.event.commits.*.message)), '#skip') }}
+      - name: Send failure notification to Slack
+        uses: 8398a7/action-slack@v3
+        with:
+          status: ${{ job.status }}
+          fields: repo,message,commit,author,took
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+        if: ${{ failure() && github.event_name == 'push' && !contains(join(toJson(github.event.commits.*.message)), '#skip') }}
