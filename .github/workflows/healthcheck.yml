@@ -1,0 +1,15 @@
+name: Health Check
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  health_check:
+    runs-on: ubuntu-18.04
+    steps:
+      - name: Check health of deployed app
+        uses: jtalk/url-health-check-action@v1.5
+        with:
+          url: https://salty-reef-93891.herokuapp.com/ping
